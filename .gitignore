@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.env
+
+# Backend downloads
+backend/downloads/
+
+# Node.js
+node_modules/
+.next/
+
+# General
+.DS_Store
+.env
