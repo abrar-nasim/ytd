@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Head from "next/head";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000";
@@ -22,14 +22,23 @@ export default function Home() {
   const [platform, setPlatform] = useState("");
   const controllerRef = useRef<AbortController | null>(null);
 
+  const autoPasteClipboard = useCallback(async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const valid =
+        /^(https?:\/\/)?(www\.)?(youtube\.com\/|youtu\.be\/|instagram\.com\/reel\/|twitter\.com\/\w+\/status\/|tiktok\.com\/@[\w.-]+\/video\/).+/;
+      if (valid.test(text)) {
+        setVideoUrl(text);
+        setPlatform(detectPlatform(text));
+      }
+    } catch {}
+  }, []);
+  
   useEffect(() => {
     document.getElementById("url-input")?.focus();
     autoPasteClipboard();
+  }, [autoPasteClipboard]);
   
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
-
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (loading) {
@@ -42,19 +51,7 @@ export default function Home() {
     }
     return () => clearInterval(interval);
   }, [loading]);
-
-  const autoPasteClipboard = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      const valid =
-        /^(https?:\/\/)?(www\.)?(youtube\.com\/|youtu\.be\/|instagram\.com\/reel\/|twitter\.com\/\w+\/status\/|tiktok\.com\/@[\w.-]+\/video\/).+/;
-      if (valid.test(text)) {
-        setVideoUrl(text);
-        setPlatform(detectPlatform(text));
-      }
-    } catch {}
-  };
-
+  
   const handleThemeToggle = () => {
     setTheme((prev) => {
       const newTheme = prev === "light" ? "dark" : "light";
@@ -129,7 +126,7 @@ export default function Home() {
         setLoading(false);
         setMerging(false);
       }, 3000);
-    } catch (err: any) {
+    } catch (err) {
       clearTimeout(timeoutId);
       if (err.response?.status === 429) {
         setError("Too many requests. Please wait a minute.");
@@ -383,6 +380,14 @@ export default function Home() {
 
       <div className="bottom-banner-ad">Bottom Banner Ad</div>
       <div className="mobile-sticky-ad">Sticky Ad</div>
+
+
+
+
+
+
+
+
 
       {/* CSS */}
       <style>{`
