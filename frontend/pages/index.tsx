@@ -116,7 +116,7 @@ export default function Home() {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.detail || "Failed to fetch video info0.");
+        throw new Error(data.detail || "Failed to fetch video info.");
       }
 
       clearTimeout(timeoutId);
@@ -130,13 +130,19 @@ export default function Home() {
       }, 3000);
     } catch (err) {
       clearTimeout(timeoutId);
-      if (err.response?.status === 429) {
-        setError("Too many requests. Please wait a minute.");
+
+      if (err instanceof Error) {
+        if ((err as any).response?.status === 429) {
+          setError("Too many requests. Please wait a minute.");
+        }
+
+        if (err.name !== "AbortError") {
+          setError(err.message || "Something went wrong. Try again later.");
+        }
+      } else {
+        setError("An unknown error occurred.");
       }
 
-      if (err.name !== "AbortError") {
-        setError(err.message || "Something went wrong. Try again later.");
-      }
       setLoading(false);
       setMerging(false);
     }
