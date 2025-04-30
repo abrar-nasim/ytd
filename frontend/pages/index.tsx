@@ -3,7 +3,6 @@ import Head from "next/head";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000";
 
-
 export default function Home() {
   const [merging, setMerging] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
@@ -50,7 +49,7 @@ export default function Home() {
         setVideoUrl(text);
         setPlatform(detectPlatform(text));
       }
-    } catch { }
+    } catch {}
   };
 
   const handleThemeToggle = () => {
@@ -108,7 +107,6 @@ export default function Home() {
       formData.append("quality", quality);
 
       const response = await fetch(`${API_BASE}/fetch`, {
-
         method: "POST",
         body: formData,
         signal: controller.signal,
@@ -133,7 +131,7 @@ export default function Home() {
       if (err.response?.status === 429) {
         setError("Too many requests. Please wait a minute.");
       }
-      
+
       if (err.name !== "AbortError") {
         setError(err.message || "Something went wrong. Try again later.");
       }
@@ -159,49 +157,48 @@ export default function Home() {
   return (
     <>
       <Head>
-        <Head>
-          <title>
-            Free Video Downloader - YouTube, Instagram, TikTok, Twitter
-          </title>
-          <meta
-            name="description"
-            content="Fastest free video downloader. Download YouTube, Instagram Reels, TikTok, Twitter videos instantly in HD quality. No signup. Free forever."
-          />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <meta name="robots" content="index, follow" />
-          <meta
-            name="keywords"
-            content="Free Video Downloader, YouTube Video Downloader, Instagram Reel Download, TikTok Video Download, Twitter Video Save, Download HD Videos"
-          />
-          <meta name="author" content="YourWebsiteName" />
+        <title>
+          Free Video Downloader - YouTube, Instagram, TikTok, Twitter
+        </title>
+        <meta
+          name="description"
+          content="Fastest free video downloader. Download YouTube, Instagram Reels, TikTok, Twitter videos instantly in HD quality. No signup. Free forever."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="index, follow" />
+        <meta
+          name="keywords"
+          content="Free Video Downloader, YouTube Video Downloader, Instagram Reel Download, TikTok Video Download, Twitter Video Save, Download HD Videos"
+        />
+        <meta name="author" content="YourWebsiteName" />
 
-          {/* Open Graph for Facebook / LinkedIn */}
-          <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://yourdomain.com/" />
-          <meta
-            property="og:title"
-            content="Download Videos Instantly - YouTube, Instagram, TikTok, Twitter"
-          />
-          <meta
-            property="og:description"
-            content="Free video downloader for YouTube, Instagram, TikTok, Twitter. No signup needed. Secure & fast HD downloads."
-          />
-          <meta property="og:image" content="/og-image.png" />
+        {/* Open Graph for Facebook / LinkedIn */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yourdomain.com/" />
+        <meta
+          property="og:title"
+          content="Download Videos Instantly - YouTube, Instagram, TikTok, Twitter"
+        />
+        <meta
+          property="og:description"
+          content="Free video downloader for YouTube, Instagram, TikTok, Twitter. No signup needed. Secure & fast HD downloads."
+        />
+        <meta property="og:image" content="/og-image.png" />
 
-          {/* Twitter Card */}
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:url" content="https://yourdomain.com/" />
-          <meta
-            name="twitter:title"
-            content="Download Videos Instantly - Free Video Downloader"
-          />
-          <meta
-            name="twitter:description"
-            content="Fastest way to download YouTube, Instagram, TikTok videos. HD quality. Free forever."
-          />
-          <meta name="twitter:image" content="/twitter-image.png" />
-          <script type="application/ld+json">
-            {`
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://yourdomain.com/" />
+        <meta
+          name="twitter:title"
+          content="Download Videos Instantly - Free Video Downloader"
+        />
+        <meta
+          name="twitter:description"
+          content="Fastest way to download YouTube, Instagram, TikTok videos. HD quality. Free forever."
+        />
+        <meta name="twitter:image" content="/twitter-image.png" />
+        <script type="application/ld+json">
+          {`
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -233,11 +230,10 @@ export default function Home() {
   ]
 }
 `}
-          </script>
+        </script>
 
-          {/* Favicon */}
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="top-banner-ad">Top Banner Ad</div>
@@ -298,8 +294,8 @@ export default function Home() {
                     {merging
                       ? "Merging..."
                       : loading
-                        ? `Fetching... ${Math.floor(progress)}%`
-                        : "Fetch Video"}
+                      ? `Fetching... ${Math.floor(progress)}%`
+                      : "Fetch Video"}
                   </button>
 
                   <div className="trust-badges">
