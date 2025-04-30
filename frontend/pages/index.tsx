@@ -33,25 +33,27 @@ export default function Home() {
       }
     } catch {}
   }, []);
-  
+
   useEffect(() => {
     document.getElementById("url-input")?.focus();
     autoPasteClipboard();
   }, [autoPasteClipboard]);
-  
+
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | null = null;
+
     if (loading) {
       setProgress(0);
       interval = setInterval(() => {
         setProgress((prev) => (prev >= 95 ? prev : prev + Math.random() * 5));
       }, 200);
-    } else {
-      clearInterval(interval);
     }
-    return () => clearInterval(interval);
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [loading]);
-  
+
   const handleThemeToggle = () => {
     setTheme((prev) => {
       const newTheme = prev === "light" ? "dark" : "light";
@@ -380,14 +382,6 @@ export default function Home() {
 
       <div className="bottom-banner-ad">Bottom Banner Ad</div>
       <div className="mobile-sticky-ad">Sticky Ad</div>
-
-
-
-
-
-
-
-
 
       {/* CSS */}
       <style>{`
