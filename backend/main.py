@@ -16,6 +16,9 @@ import requests
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = FastAPI()
 
@@ -114,7 +117,9 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
             proc = await asyncio.create_subprocess_exec(*ffmpeg_cmd)
             await proc.communicate()
             if os.path.exists(thumbnail_path):
-                thumbnail = f"http://127.0.0.1:8000/download/{base_filename}_thumbnail.jpg"
+                # thumbnail = f"http://127.0.0.1:8000/download/{base_filename}_thumbnail.jpg"
+                thumbnail = f"{os.getenv('BASE_URL', 'http://127.0.0.1:8000')}/download/{base_filename}_thumbnail.jpg"
+
 
         captions_text = None
         subtitles = info.get('subtitles') or {}
@@ -134,7 +139,9 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
         filesize_bytes = info.get('filesize') or info.get('filesize_approx')
         filesize_mb = round(filesize_bytes / (1024 * 1024), 2) if filesize_bytes else None
 
-        video_download_url = f"http://127.0.0.1:8000/download/{base_filename}.mp4"
+        # video_download_url = f"http://127.0.0.1:8000/download/{base_filename}.mp4"
+        video_download_url = f"{os.getenv('BASE_URL', 'http://127.0.0.1:8000')}/download/{base_filename}.mp4"
+
 
         return JSONResponse(content={
             "title": title,
@@ -163,12 +170,16 @@ async def download_file(filename: str):
 
 def cleanup_old_files():
     now = time.time()
-    cutoff = now - 24 * 3600
+    cutoff = now - 2 * 3600
     for filename in os.listdir("downloads"):
         file_path = os.path.join("downloads", filename)
         if os.path.isfile(file_path) and os.path.getmtime(file_path) < cutoff:
             os.remove(file_path)
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(cleanup_old_files, 'interval', hours=6)
+# scheduler.add_job(cleanup_old_files, 'interval', hours=6)
+scheduler.add_job(cleanup_old_files, 'interval', minutes=30)  # runs every 30 min
+
 scheduler.start()
+
+
