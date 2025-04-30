@@ -50,7 +50,7 @@ export default function Home() {
         setVideoUrl(text);
         setPlatform(detectPlatform(text));
       }
-    } catch (err) { }
+    } catch () { }
   };
 
   const handleThemeToggle = () => {
