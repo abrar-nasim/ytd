@@ -25,7 +25,10 @@ export default function Home() {
   useEffect(() => {
     document.getElementById("url-input")?.focus();
     autoPasteClipboard();
+  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
