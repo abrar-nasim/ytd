@@ -128,7 +128,7 @@ export default function Home() {
         setLoading(false);
         setMerging(false);
       }, 3000);
-    } catch (err) {
+    } catch (err : unknown) {
       clearTimeout(timeoutId);
 
       if (err instanceof Error) {
