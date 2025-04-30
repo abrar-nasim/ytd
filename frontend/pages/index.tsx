@@ -114,7 +114,7 @@ export default function Home() {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.detail || "Failed to fetch video info.");
+        throw new Error(data.detail || "Failed to fetch video info0.");
       }
 
       clearTimeout(timeoutId);
