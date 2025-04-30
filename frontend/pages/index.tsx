@@ -126,7 +126,7 @@ export default function Home() {
         setLoading(false);
         setMerging(false);
       }, 3000);
-    } catch (err) {
+    } catch (err : any) {
       clearTimeout(timeoutId);
       if (err.response?.status === 429) {
         setError("Too many requests. Please wait a minute.");
