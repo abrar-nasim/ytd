@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Head from "next/head";
 
+
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000";
 
 export default function Home() {
@@ -132,9 +134,10 @@ export default function Home() {
       clearTimeout(timeoutId);
 
       if (err instanceof Error) {
-        if (axios.isAxiosError(err) && err.response?.status === 429) {
+        if (err.message.includes("429")) {
           setError("Too many requests. Please wait a minute.");
         }
+        
 
         if (err.name !== "AbortError") {
           setError(err.message || "Something went wrong. Try again later.");
