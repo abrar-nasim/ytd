@@ -128,25 +128,24 @@ export default function Home() {
         setLoading(false);
         setMerging(false);
       }, 3000);
-    }  catch (err: unknown) {
+    } catch (err: unknown) {
       clearTimeout(timeoutId);
-    
+
       if (err instanceof Error) {
-        if ("response" in err && typeof err.response === "object" && err.response?.status === 429) {
+        if (axios.isAxiosError(err) && err.response?.status === 429) {
           setError("Too many requests. Please wait a minute.");
         }
-    
+
         if (err.name !== "AbortError") {
           setError(err.message || "Something went wrong. Try again later.");
         }
       } else {
         setError("An unknown error occurred.");
       }
-    
+
       setLoading(false);
       setMerging(false);
     }
-    
   };
 
   const handleCancel = () => {
