@@ -140,7 +140,12 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
         filesize_mb = round(filesize_bytes / (1024 * 1024), 2) if filesize_bytes else None
 
         # video_download_url = f"http://127.0.0.1:8000/download/{base_filename}.mp4"
-        video_download_url = f"{os.getenv('BASE_URL', 'http://127.0.0.1:8000')}/download/{base_filename}.mp4"
+        # video_download_url = f"{os.getenv('BASE_URL', 'http://127.0.0.1:8000')}/download/{base_filename}.mp4"
+
+        # Inside your route
+        base_url = str(request.base_url).rstrip("/")  # Gets the live domain like Railway
+        video["download_url"] = f"{base_url}/download/{filename}"
+
 
 
         return JSONResponse(content={
