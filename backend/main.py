@@ -50,7 +50,6 @@ async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
 @app.get("/")
 async def root():
     return {"message": "YTD Backend is running!"}
-
 @app.post("/fetch")
 @limiter.limit("10/minute")
 async def fetch_video(request: Request, url: str = Form(...), quality: str = Form("best")):
@@ -73,7 +72,8 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
         safe_title = sanitize_filename(title)[:50]
         suffix = random_suffix()
         base_filename = f"{safe_title}_{suffix}"
-        output_path = f"downloads/{base_filename}.mp4"
+        filename = f"{base_filename}.mp4"
+        output_path = f"downloads/{filename}"
 
         format_preference = {
             "360p": "best[height<=360]",
@@ -107,6 +107,7 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
         if download_task.exception():
             raise download_task.exception()
 
+        # Auto-generate thumbnail if missing
         if not thumbnail:
             thumbnail_path = f"downloads/{base_filename}_thumbnail.jpg"
             ffmpeg_cmd = [
@@ -117,10 +118,9 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
             proc = await asyncio.create_subprocess_exec(*ffmpeg_cmd)
             await proc.communicate()
             if os.path.exists(thumbnail_path):
-                # thumbnail = f"http://127.0.0.1:8000/download/{base_filename}_thumbnail.jpg"
-                thumbnail = f"{os.getenv('BASE_URL', 'http://127.0.0.1:8000')}/download/{base_filename}_thumbnail.jpg"
+                thumbnail = f"{str(request.base_url).rstrip('/')}/download/{base_filename}_thumbnail.jpg"
 
-
+        # Optional caption extraction
         captions_text = None
         subtitles = info.get('subtitles') or {}
         if subtitles:
@@ -135,35 +135,27 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
                 except Exception as e:
                     print("Subtitle fetch error:", e)
 
-        # ✅ Fetch approximate file size (in MB)
         filesize_bytes = info.get('filesize') or info.get('filesize_approx')
         filesize_mb = round(filesize_bytes / (1024 * 1024), 2) if filesize_bytes else None
 
-        # video_download_url = f"http://127.0.0.1:8000/download/{base_filename}.mp4"
-        # video_download_url = f"{os.getenv('BASE_URL', 'http://127.0.0.1:8000')}/download/{base_filename}.mp4"
-
-        # Inside your route
-        base_url = str(request.base_url).rstrip("/")  # Gets the live domain like Railway
-        video["download_url"] = f"{base_url}/download/{filename}"
-
-
+        download_url = f"{str(request.base_url).rstrip('/')}/download/{filename}"
 
         return JSONResponse(content={
             "title": title,
             "thumbnail": thumbnail,
-            "download_url": video_download_url,
+            "download_url": download_url,
             "captions": captions_text,
             "post_caption": post_caption,
-            "filesize_mb": filesize_mb,    # ✅ Added here
+            "filesize_mb": filesize_mb,
         })
 
     except DownloadError as de:
-        error_message = str(de)
-        raise HTTPException(status_code=400, detail="Download error: " + error_message)
+        raise HTTPException(status_code=400, detail=f"Download error: {str(de)}")
 
     except Exception as e:
         print("Server error:", e)
         raise HTTPException(status_code=500, detail="Server error. Try again later.")
+
 
 @app.get("/download/{filename}")
 async def download_file(filename: str):
