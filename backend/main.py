@@ -138,9 +138,9 @@ async def fetch_video(request: Request, url: str = Form(...), quality: str = For
         filesize_bytes = info.get('filesize') or info.get('filesize_approx')
         filesize_mb = round(filesize_bytes / (1024 * 1024), 2) if filesize_bytes else None
         filename = f"{base_filename}.mp4"
+        base_url = os.getenv("BASE_URL", "http://127.0.0.1:8000")
+        download_url = f"{base_url}/download/{filename}"
 
-
-        download_url = f"{str(request.base_url).rstrip('/')}/download/{filename}"
 
         return JSONResponse(content={
             "title": title,
